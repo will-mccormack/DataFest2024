@@ -1,0 +1,251 @@
+---
+title: "DataFest 2024"
+author: "William McCormack"
+date: "2024-04-27"
+output: html_document
+---
+## Note: Important summary tables found at the bottom of this file
+
+```{r}
+knitr::opts_knit$set(root.dir = "C:/Users/will8/Desktop/DataFest/Data/Random Sample of Data Files")
+```
+
+
+## Reading in Files (These are the random sample files, not the full data sets)
+```{r}
+# Set the working directory using forward slashes or double backslashes
+setwd("C:/Users/will8/Desktop/DataFest/Data/Random Sample of Data Files")
+
+# Read CSV files
+items <- read.csv("items.csv")
+media_views <- read.csv("media_views.csv")
+page_views <- read.csv("page_views.csv")
+responses <- read.csv("responses.csv")
+
+# Since the working directory is already set, use relative paths for all files
+checkpoints_eoc <- read.csv("checkpoints_eoc.csv")
+checkpoints_pulse <- read.csv("checkpoints_pulse.csv")
+```
+```{r}
+head(items)
+head(media_views)
+head(page_views)
+head(responses)
+head(checkpoints_eoc)
+head(checkpoints_pulse)
+```
+
+```{r}
+summarize_and_plot <- function(data, data_name) {
+  cat("\nSummary Statistics for", data_name, ":\n")
+  print(summary(data))
+  
+  # Generate plots for numeric and categorical data
+  num_cols <- sapply(data, is.numeric)
+  cat_cols <- sapply(data, is.factor)
+  
+  # Histograms for numeric columns
+  if (any(num_cols)) {
+    par(mfrow=c(1, sum(num_cols))) # Arrange plots in a single row
+    for (i in names(data[, num_cols, drop = FALSE])) {
+      hist(data[[i]], main=paste("Histogram of", i), xlab=i, col='blue')
+    }
+  }
+  
+  # Bar plots for categorical columns
+  if (any(cat_cols)) {
+    par(mfrow=c(1, sum(cat_cols))) # Arrange plots in a single row
+    for (i in names(data[, cat_cols, drop = FALSE])) {
+      if (length(unique(data[[i]])) > 1) { # Only if there's more than one unique value
+        counts <- table(data[[i]])
+        barplot(counts, main=paste("Bar Plot of", i), xlab=i, col='steelblue')
+      }
+    }
+  }
+  
+  # Reset plotting parameters
+  par(mfrow=c(1, 1))
+}
+
+# Apply the function to each dataset
+summarize_and_plot(items, "Items")
+summarize_and_plot(media_views, "Media Views")
+summarize_and_plot(page_views, "Page Views")
+summarize_and_plot(responses, "Responses")
+summarize_and_plot(checkpoints_eoc, "Checkpoints EOC")
+summarize_and_plot(checkpoints_pulse, "Checkpoints Pulse")
+```
+
+### `Items` Table:
+
+| Feature                  | Description                 |
+|--------------------------|-----------------------------|
+| **institution_id**       | 1335 entries, all characters |
+| **class_id**             | 1335 entries, all characters |
+| **item_id**              | 1335 entries, all characters |
+| **item_type**            | 1335 entries, all characters |
+| **chapter**              | 1335 entries, all characters |
+| **page**                 | 1335 entries, all characters |
+| **dcl_pre_exercise_code**| 1335 NA values |
+| **dcl_sample_code**      | 1335 entries, all characters |
+| **dcl_solution**         | 1335 entries, all characters |
+| **dcl_sct**              | 1335 entries, all characters |
+| **dcl_hint**             | 1335 NA values |
+| **lrn_activity_reference** | 1335 entries, all characters |
+| **lrn_question_reference** | 1335 entries, all characters |
+| **lrn_question_position**  | Range from 1 to 10 (1.448 average) |
+| **lrn_type**             | 1335 entries, all characters |
+| **lrn_template_name**    | 1335 entries, all characters |
+| **chapter_number**       | Range from 1 to 16 (7.893 average) |
+| **section_number**       | Range from 1 to 16 (6.556 average) |
+| **review_flag**          | 252 TRUE, 1083 FALSE |
+
+
+### `Media Views` Table
+
+| Feature             | Description                   |
+|---------------------|-------------------------------|
+| **book**                | 926 entries, all characters   |
+| **release**             | 926 entries, all characters   |
+| **chapter**             | 926 entries, all characters   |
+| **page**                | 926 entries, all characters   |
+| **chapter_number**      | Range from 4 to 5 (4.592 average) |
+| **section_number**      | Range from 2 to 9 (5.149 average) |
+| **institution_id**      | 926 entries, all characters   |
+| **class_id**            | 926 entries, all characters   |
+| **student_id**          | 926 entries, all characters   |
+| **media_id**            | Range from 379060892 to 381974697 |
+| **dt_started**          | 926 entries, all characters   |
+| **dt_last_event**       | 926 entries, all characters   |
+| **access_count**        | Range from 1 to 3 (1.103 average) |
+| **proportion_video**    | Range from 0 to 1 (0.702 average) |
+| **proportion_time**     | Range from 0 to 2.9995 (0.7363 average) |
+| **review_flag**         | 926 FALSE |
+
+
+### `Page Views` Table
+
+| Feature             | Description                   |
+|---------------------|-------------------------------|
+| **book**                | 73109 entries, all characters |
+| **release**             | 73109 entries, all characters |
+| **chapter**             | 73109 entries, all characters |
+| **page**                | 73109 entries, all characters |
+| **chapter_number**      | Range from 1 to 16 (6.127 average) |
+| **section_number**      | Range from 1 to 16 (5.667 average) |
+| **dt_accessed**         | 73109 entries, all characters |
+| **was_complete**        | 27686 TRUE, 45422 FALSE |
+| **tried_again_dt**      | 73109 entries, all characters |
+| **tried_again_clicks**  | Range from 0 to 31 (0.2517 average) |
+| **engaged**             | Range up to 40901182 (313632 average) |
+| **idle_brief**          | Range up to 9625934 (106321 average) |
+| **idle_long**           | Range up to 43178396 (101085 average) |
+| **off_page_brief**      | Range up to 7248853 (97713 average) |
+| **off_page_long**       | Range up to 43184286 (1451013 average) |
+| **review_flag**         | 6989 TRUE, 66120 FALSE |
+
+
+### `Responses` Table
+
+| Feature                  | Description                 |
+|--------------------------|-----------------------------|
+| **book**                     | 246278 entries, all characters |
+| **release**                  | 246278 entries, all characters |
+| **chapter**                  | 246278 entries, all characters |
+| **page**                     | 246278 entries, all characters |
+| **chapter_number**           | Range from 1 to 16 (6.403 average) |
+| **section_number**           | Range from 1 to 16 (6.304 average) |
+| **review_flag**              | 41971 TRUE, 204307 FALSE |
+| **institution_id**           | 246278 entries, all characters |
+| **class_id**                 | 246278 entries, all characters |
+| **student_id**               | 246278 entries, all characters |
+| **item_id**                  | 246278 entries, all characters |
+| **item_type**                | 246278 entries, all characters |
+| **response**                 | 246278 entries, all characters |
+| **prompt**                   | 246278 entries, all characters |
+| **points_possible**          | Range from 1 to 1 (1 average) |
+| **points_earned**            | Range from 0 to 1 (0.6 average) |
+| **dt_submitted**             | 246278 entries, all characters |
+| **completes_page**           | 44422 TRUE, 201856 FALSE |
+| **attempt**                  | Range from 1 to 60 (1.258 average) |
+| **user_agent**               | 246278 entries, all characters |
+| **lrn_response_id**          | 246278 entries, all characters |
+| **lrn_activity_reference**   | 246278 entries, all characters |
+| **lrn_question_reference**   | 246278 entries, all characters |
+| **lrn_question_position**    | Range from 1 to 26 (1.88 average) |
+| **lrn_type**                 | 246278 entries, all characters |
+| **lrn_dt_started**           | 246278 entries, all characters |
+| **lrn_dt_saved**             | 246278 entries, all characters |
+| **lrn_status**               | 246278 entries, all characters |
+| **lrn_option_0**             | 246278 entries, all characters |
+| **lrn_option_1**             | 246278 entries, all characters |
+| **lrn_option_2**             | 246278 entries, all characters |
+| **lrn_option_3**             | 246278 entries, all characters |
+| **lrn_option_4**             | 246278 entries, all characters |
+| **lrn_option_5**             | 246278 entries, all characters |
+| **lrn_option_6**             | 246278 entries, all characters |
+| **lrn_option_7**             | 246278 entries, all characters |
+| **lrn_option_8**             | 246278 entries, all characters |
+| **lrn_option_9**             | 246278 entries, all characters |
+| **lrn_option_10**            | 246278 entries, all characters |
+| **lrn_option_11**            | 246278 entries, all characters |
+
+
+### `Checkpoints EOC` Table
+
+| Feature             | Description                   |
+|---------------------|-------------------------------|
+| **student_id**      | 2542 entries, all characters  |
+| **class_id**        | 2542 entries, all characters  |
+| **chapter_number**  | Range from 1 to 16 (6.795 average) |
+| **book**            | 2542 entries, all characters  |
+| **EOC**             | Range from 0 to 1 (0.6058 average) |
+| **n_possible**      | Range from 0 to 250 (76.46 average) |
+| **n_correct**       | Range from 0 to 184 (46.15 average) |
+| **n_attempt**       | Range from 1 to 2946 (118.6 average) |
+
+
+### `Checkpoints Pulse` Table
+
+| Feature             | Description                   |
+|---------------------|-------------------------------|
+| **book**            | 11712 entries, all characters |
+| **release**         | 11712 entries, all characters |
+| **institution_id**  | 11712 entries, all characters |
+| **class_id**        | 11712 entries, all characters |
+| **student_id**      | 11712 entries, all characters |
+| **chapter_number**  | Range from 2 to 13 (7.5 average) |
+| **construct**       | 11712 entries, all characters |
+| **response**        | Range from 1 to 6 (4.047 average) |
+
+
+### Interpretation of Histograms Table
+
+| Histogram                   | Interpretation                                                                                                                                                             | Relation to Other Graphs                                                                                                                      |
+|-----------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
+| **lrn_question_position**   | Highly left-skewed distribution with most frequent values at the lower end, indicating that lower lrn_question_positions are more common in the dataset.                   | When compared with chapter_number and section_number histograms, it may suggest a design pattern in the dataset regarding question positioning. |
+| **chapter_number**          | The data seems to be evenly distributed across different chapters, with a slight preference for earlier chapters, suggesting a relatively uniform use of chapters.           | Relates to lrn_question_position as both are involved in how content is structured and consumed.                                             |
+| **section_number**          | Similar to chapter_number but with fewer sections being used frequently, which might indicate some sections are referenced or used more than others.                       | Correlates with chapter_number, as both reflect the organizational structure of the content.                                                  |
+| **media_id**                | Concentrated spikes suggest certain media IDs are far more prevalent. This could indicate a few media pieces are very commonly accessed or referenced.                     | May not directly relate to other histograms but gives insight into the most engaged media resources.                                          |
+| **access_count**            | Shows that the vast majority of media is accessed only once, with very few instances of media being accessed more than twice.                                              | Could be used alongside chapter_number and section_number to analyze the consumption pattern of media in the context of book structure.        |
+| **proportion_video**        | Indicates a bimodal distribution where videos are either not watched at all or watched completely, suggesting polarized engagement with video content.                     | Relates to access_count and proportion_time to give a comprehensive understanding of media engagement.                                       |
+| **proportion_time**         | Similar to proportion_video, showing polarized engagement, with a slight increase in frequencies around the maximum, indicating complete or nearly complete engagement.   | When viewed with proportion_video, reflects a pattern of how users interact with video content in terms of time spent.                        |
+| **chapter_number (second)** | The even distribution across chapters is consistent with the first histogram for chapter_number, reinforcing the interpretation of uniform chapter usage.                   | Confirms the pattern observed in the first chapter_number histogram.                                                                         |
+| **section_number (second)** | This histogram confirms the earlier interpretation that certain sections are more heavily used than others, with some sections being very frequently used.                  | Confirms the pattern observed in the first section_number histogram.                                                                         |
+| **tried_again_clicks**      | Most values are 0, which means users rarely click to try again after accessing content, indicating either content is understood in the first go or not revisited.          | May be combined with access_count to discuss user behavior in terms of revisiting or engaging with content.                                  |
+| **engaged**                 | Extremely right-skewed distribution with very high frequencies for lower engagement values, indicating that brief interactions or engagements are very common.              | When interpreted alongside idle_brief, idle_long, off_page_brief, and off_page_long, it suggests patterns in user attention and distraction.  |
+| **idle_brief**              | Sharp peak at zero with a long tail, suggesting most users have brief idle times, with a small number experiencing longer idle periods.                                    | Reflects user attention span in conjunction with the engaged histogram.                                                                     |
+| **idle_long**               | The histogram shows that long periods of idleness are rare, with most values concentrated at the beginning of the scale.                                                   | Complements the idle_brief histogram to give a fuller picture of user inactivity during engagement with the content.                         |
+| **off_page_brief**          | Most values are at the lower end, indicating users briefly navigate away from the page.                                                                                    | Should be analyzed in context with off_page_long to understand off-page user behavior.                                                      |
+| **off_page_long**           | Suggests that prolonged periods away from the page are less common, indicating that when users navigate away, they usually return promptly.                                | Completes the narrative on user behavior when leaving the page started by off_page_brief.                                                   |
+| **points_possible**         | The histogram depicts a single value for points_possible, suggesting that all responses in the dataset are out of a uniform point value.                                    | This uniformity simplifies comparisons across different sections and chapters.                                                              |
+| **points_earned**           | The bimodal distribution suggests that responses tend to either earn full points or no points, pointing to a pattern of all-or-nothing performance on tasks or assessments. | Should be considered along with points_possible to assess overall performance.                                                              |
+| **attempt**                 | Highly concentrated at the lower end, implying most tasks or questions are attempted once, with very few multiple attempts.                                                | Reflects user behavior in terms of retries and can be related to tried_again_clicks.                                                        |
+| **chapter_number (third)**  | Reinforces the uniform usage of chapters across the dataset.                                                                                                              | Consistency across three histograms for chapter_number confirms the pattern of chapter engagement.                                          |
+| **response**                | The histogram shows a varied frequency of different responses, indicating diverse engagement levels or response types in the dataset.                                      | Response patterns can be cross-referenced with engagement levels shown in other histograms.                                                 |
+
+
+
+
+
+
